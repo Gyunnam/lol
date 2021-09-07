@@ -12,7 +12,10 @@ const GlobalStyle = createGlobalStyle`
         line-height : 1em
         color : color: #333;
     }
-    
+    a{
+        text-decoration : none;
+        color : inherit;
+    }
     ul {
         list-style: none;
     }
