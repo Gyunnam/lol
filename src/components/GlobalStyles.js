@@ -9,8 +9,8 @@ const GlobalStyle = createGlobalStyle`
     body {
         box-sizing: border - box;
         font-size : 12px;
-        line-height : 1em
-        color : color: #333;
+        line-height : 1em;
+        color : #333;
     }
     a{
         text-decoration : none;
