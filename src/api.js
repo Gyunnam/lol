@@ -8,10 +8,13 @@ const api = axios.create({
 })
 
 //아이디 검색
-const API_KEY = '?api_key=RGAPI-c095299d-e5ed-498d-863f-a9e2fd15c1a8'
+const API_KEY = '?api_key=RGAPI-c9576f0b-deeb-4b64-afb4-b22834ee7177'
+
 
 export const lolApi = {
     searchSummonerById : (id)=> api.get(`summoner/v4/summoners/by-name/${id}${API_KEY}`),
-    matchSummonerById : (accountId)=> api.get(`match/v4/matchlists/by-account/${accountId}${API_KEY}`),
+    searchMatchById : (accountId)=> api.get(`match/v4/matchlists/by-account/${accountId}${API_KEY}`),
+    searchIdByMatch : (id)=> api.get(`match/v4/matches/${id}${API_KEY}`)
+    
     // matchMachById : (matchId)=> api.get(``)
 }
