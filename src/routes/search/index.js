@@ -8,6 +8,8 @@ const Search = ()=>{
 
     const [ id, setId ] = useState('')
     const [ mainPlayerData, setMainPlayerData ] = useState([])
+    const [ playerData , setPlayerData ] = useState()
+    
 
     const onKeyPress = async (e)=>{
         if(e.key === "Enter"){
@@ -19,9 +21,14 @@ const Search = ()=>{
         const matchId = await match(user)
 
         const result = await MatchLog(matchId,user)
-        setMainPlayerData(result)
+        
+        setPlayerData(result.result)
+        setMainPlayerData(result.mainPlayerData)
+        
+        
     }
-    
+
+
     return(
         <>
             <input type="text" onKeyPress={onKeyPress} />
@@ -30,7 +37,7 @@ const Search = ()=>{
                 {
                     mainPlayerData.map((item,index)=>{
                 
-                        return <MatchingTile data={item[0]} key={index} />
+                        return <MatchingTile data={item[0]} key={index} team={playerData}/>
                 
                     })
                 }
@@ -100,13 +107,15 @@ async function MatchLog (idList,user){
                         'D' : `${item.stats.deaths}`,
                         'A' : `${item.stats.assists}`,
                         'KDA' : `${((item.stats.kills+item.stats.assists)/item.stats.deaths).toFixed(2)}`,
-                        'item0' : item.stats.item0,
-                        'item1' : item.stats.item1,
-                        'item2' : item.stats.item2,
-                        'item3' : item.stats.item3,
-                        'item4' : item.stats.item4,
-                        'item5' : item.stats.item5,
-                        'item6' : item.stats.item6,
+                        'item' : [
+                            item.stats.item0,
+                            item.stats.item1,
+                            item.stats.item2,
+                            item.stats.item3,
+                            item.stats.item4,
+                            item.stats.item5,
+                            item.stats.item6,
+                        ],
                         'teamwin' : item.stats.win,
                         'cs' : `${item.stats.neutralMinionsKilled + item.stats.totalMinionsKilled}`,
                         'participantId' : idx+1
@@ -127,15 +136,17 @@ async function MatchLog (idList,user){
         })
     )
     
-    
-    
+
+    //메인 플레이어 데이터
     const mainPlayerData = result.map(({player,match})=>{
         const mainPlayer = match.filter(item=>item.accountId === user)
         return player.filter(item=>item.participantId === mainPlayer[0].participantId)
-
     })
+
     
-    return mainPlayerData
+    return { mainPlayerData, result }
 }
+
+
 export default Search
 
