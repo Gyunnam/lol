@@ -8,26 +8,24 @@ const Search = ()=>{
 
     const [ id, setId ] = useState('')
     const [ mainPlayerData, setMainPlayerData ] = useState([])
-    const [ playerData , setPlayerData ] = useState()
+    const [ playerstats , setPlayerstats ] = useState([])
+    const [ playername , setPlayername ] = useState([])
     
-
     const onKeyPress = async (e)=>{
+        
         if(e.key === "Enter"){
             setId(e.target.value)
+            const user = await search(id)
+
+            const matchId = await match(user)
+
+            const result = await MatchLog(matchId,user)
+
+            setPlayername(result.result.map(item=>item.match))
+            setPlayerstats(result.result.map(item=>item.player))
+            setMainPlayerData(result.mainPlayerData)
         }
-
-        const user = await search(id)
-
-        const matchId = await match(user)
-
-        const result = await MatchLog(matchId,user)
-        
-        setPlayerData(result.result)
-        setMainPlayerData(result.mainPlayerData)
-        
-        
     }
-
 
     return(
         <>
@@ -36,8 +34,8 @@ const Search = ()=>{
                 <p>값 : {id}</p>
                 {
                     mainPlayerData.map((item,index)=>{
-                
-                        return <MatchingTile data={item[0]} key={index} team={playerData}/>
+                        // console.log(item);
+                        return <MatchingTile key={index} data={item[0]} stats={playerstats[index]} name={playername[index]} />
                 
                     })
                 }
@@ -71,7 +69,7 @@ async function match(user){
 
     var a = []
     
-    for(var i = 0 ; i < 10 ; i++){
+    for(var i = 0 ; i < 3 ; i++){
         a.push(matchList.matches[i].gameId)
     }
     
@@ -118,15 +116,15 @@ async function MatchLog (idList,user){
                         ],
                         'teamwin' : item.stats.win,
                         'cs' : `${item.stats.neutralMinionsKilled + item.stats.totalMinionsKilled}`,
-                        'participantId' : idx+1
+                        'participantId' : Number(idx+1)
                     }
                 )
             })
-            const match = data.participantIdentities.map((i,idx)=>{
+            const match = data.participantIdentities.map((i)=>{
                 return(
                     {
                         'accountId' : i.player.accountId,
-                        'participantId' : i.participantId,
+                        'participantId' : Number(i.participantId),
                         'name' : i.player.summonerName
                     } 
                 )
@@ -142,6 +140,8 @@ async function MatchLog (idList,user){
         const mainPlayer = match.filter(item=>item.accountId === user)
         return player.filter(item=>item.participantId === mainPlayer[0].participantId)
     })
+    // console.log(mainPlayerData)
+
 
     
     return { mainPlayerData, result }

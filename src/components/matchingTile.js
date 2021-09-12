@@ -1,15 +1,89 @@
 import React from 'react';
 import styled from 'styled-components';
+import ChapmionData from '../data/champion.json'
+// import SummonerList from './SummonerList';
 
 
-function MatchingTile({data, team}){
+function MatchingTile({data, name, stats}){
 
-    console.log('mainPlayer:',data)
-    console.log('player:', team)
+
+    const {data:champ} =  ChapmionData
     
-    const { A, K ,D, KDA, champId, champLevel, cs, item, spell1Id, spell2Id, teamId, teamwin} = data
-
+    const getValues = Object.values(champ)
+        .filter(item=> item.key !== undefined)
+            .map(item=>{
+                return{
+                    'id': item.id, 
+                    'key': item.key,
+                    'name' : item.name
+                };
+            });
     
+    // console.log('name원본:',name); // 유저의 닉네임을  
+    // console.log('stats원본:',stats); //챔피언 아이디를
+    
+    const championList = stats.map((item)=>{
+        return item.champId
+    })
+    const team1Champ = championList.filter((item,index)=> index < 5)
+    const team2Champ = championList.filter((item,index)=> index >= 5)
+
+
+
+
+    // console.log(team1Key);
+    // console.log(team1Champ);
+    
+    // const key = getValues.filter((item,index)=>item.key === `${team1Champ[0]}`)
+    const team1key = team1Champ.map((item)=>{
+        const id = {'key' : item}
+        const key = getValues
+            .filter((item)=>{return item.key === `${id.key}`})
+                .map(item=>{
+                    return item.id
+                })
+        return key[0]
+    })
+    
+
+
+
+    const allChampionImg = (key)=>{
+        return key.map((item)=>{
+            return <TeamChampImg src={`http://ddragon.leagueoflegends.com/cdn/11.18.1/img/champion/${item}.png`} />
+        })
+    }
+    // console.log('key',team1key)
+    
+
+    const nameList = name.map((item)=>{
+        return item.name
+    })
+    const team1Name = nameList.filter((item,index)=> index < 5 )
+    const team2Name = nameList.filter((item,index)=> index >= 5 )
+
+    const nameInit = (arr)=>{
+        return arr.map((item)=>{
+            return <div>{item}</div>
+        })
+    }
+    // console.log(team1Name)
+    const team1Info = ()=>{
+        for(var i = 0 ; i < 5 ; i++){
+            return (
+                <>
+                <div>{allChampionImg(team1key)}</div>
+                <div>{nameInit(team1Name)}</div>
+                </>
+            )
+            
+        }
+    }
+
+    // console.log(nameList);
+    
+    const { A, K ,D, KDA, champId, champLevel, cs, item, spell1Id, spell2Id, teamwin} = data
+
     //승패 변환
     const resultByGame = (teamwin)=> {
         return (teamwin === true ? '승리' : '패배')
@@ -18,11 +92,79 @@ function MatchingTile({data, team}){
     const conversionKDA = (KDA)=>{
         return (KDA === 'Infinity') ? 'Perfect' : KDA
     }
-    // 아이템 이미지 태그 생성
-    const championImg = item.map((item)=>{
-        return (item === 0) ? false : <div>{item}</div> 
-    }) 
 
+    //챔피언 name 메인
+    const champName = getValues
+        .filter((item)=>{return item.key === `${champId}`})
+            .map(item=>{return item.name})
+    //챔피언 id 메인
+    const champKey = getValues
+        .filter((item)=>{return item.key === `${champId}`})
+            .map(item=>{return item.id})
+    //챔피언 img 넣기
+    const champImg = (key)=>{
+        return(<ChapmImg src={`http://ddragon.leagueoflegends.com/cdn/11.18.1/img/champion/${key}.png`} />)
+    }
+
+    //스펠 이름 바꾸고 넣기
+    const consversionSpell = (spellId)=>{
+        switch(spellId){
+            case 21:
+                name = 'SummonerBarrier' 
+                break
+            case 1 :
+                name = 'SummonerBoost'
+                break
+            case 14 :
+                name = 'SummonerDot'
+                break
+            case 3 :
+                name = 'SummonerExhaust'
+                break
+            case 4 :
+                name = 'SummonerFlash'
+                break
+            case 6 :
+                name = 'SummonerHaste'
+                break
+            case 7 :
+                name = 'SummonerHeal'
+                break
+            case 13 :
+                name = 'SummonerMana'
+                break
+            case 11 :
+                name = 'SummonerSmite'
+                break
+            case 39 :
+                name = 'SummonerSnowURFSnowball_Mark'
+                break
+            case 32 :
+                name = 'SummonerSnowball'
+                break
+            case 12 :
+                name = 'SummonerTeleport'
+                break
+            case 54 :
+                name = 'Summoner_UltBook_Placeholder'
+                break
+            case 30 :
+                name = 'SummonerPoroRecall'
+                break
+            case 31 :
+                name = 'SummonerPoroThrow'
+                break
+            default:
+                console.log('오류임')
+        }
+        return <SpellImg src={`http://ddragon.leagueoflegends.com/cdn/11.18.1/img/spell/${name}.png`} />
+    }
+
+    // 아이템 이미지 태그 생성
+    const itemId = item.map((item)=>{
+        return (item === 0) ? <NoImg /> : <Items><ItemImg src={`http://ddragon.leagueoflegends.com/cdn/11.18.1/img/item/${item}.png`} alt="" /></Items> 
+    }) 
+    
 
     return(
         <>
@@ -38,18 +180,18 @@ function MatchingTile({data, team}){
                         </GameResult>
                         <GameSetInfo>
                             <ChampionImg>
-                                {champId}
+                                {champImg(champKey)}
                             </ChampionImg>
                             <SummonerSpell>
                                 <Spell>
-                                    {spell1Id}
+                                    {consversionSpell(spell1Id)}
                                 </Spell>
                                 <Spell>
-                                    {spell2Id}
+                                    {consversionSpell(spell2Id)}
                                 </Spell>
                             </SummonerSpell>
                             <ChampionName>
-                                {champId}
+                                {champName}
                             </ChampionName>
                         </GameSetInfo>
                         <GameKDA>
@@ -66,21 +208,18 @@ function MatchingTile({data, team}){
                             <div>킬관여</div>
                         </Stats>
                         <ItemWrap>
-                            {/* 템스트 */}
-                            <div>
-                                {/* 아이템 하고 map함수 돌려서 */}
-                                <div>{championImg}</div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                            </div>
-                            <div></div>
+                            <ItemList>
+                                {itemId}
+                            </ItemList>
                         </ItemWrap>
                         <TeamGroup>
-
+                                <div>
+    
+                                    {team1Info()}
+                                </div>
+                                <div>
+                                    {nameInit(team2Name)}
+                                </div>
                         </TeamGroup>
                         <DeatilBtn>버튼</DeatilBtn>
                     </Content>
@@ -133,6 +272,12 @@ const ChampionImg = styled.div`
     border-radius: 50%;
     overflow: hidden;
 `
+const ChapmImg = styled.img`
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    `
 const SummonerSpell = styled.div`
     display: inline-block;
     vertical-align: middle;
@@ -145,6 +290,11 @@ const Spell = styled.div`
     height: 22px;
     margin-top: 2px;
     border-radius: 3px;
+`
+const SpellImg = styled.img`
+    display: block;
+    width: 100%;
+    height: 100%;
 `
 
 const ChampionName = styled.div`
@@ -178,12 +328,43 @@ const ItemWrap = styled.div`
     height: 96px;
     vertical-align: middle;
 `
+const ItemList = styled.div`
+    width: 96px;
+    margin: 0 auto;
+`
+const Items = styled.div`
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius:3px;
+    margin-top:2px;
+    margin-right: 2px;
+    overflow: hidden;
+`
+const NoImg = styled.div`
+    display: inline-block;
+    background-color: gray;
+    border-radius:3px;
+    margin-top:2px;
+    margin-right: 2px;
+    width: 22px;
+    height: 22px;
+`
+const ItemImg = styled.img`
+    width:100%;
+    height:100%;       
+`
 const TeamGroup = styled.div`
     width: 170px;
 
     display: table-cell;
     height: 96px;
     vertical-align: middle;
+`
+
+const TeamChampImg = styled.img`
+    width: 100%;
+    height: 100%;
 `
 const DeatilBtn = styled.div`
     width: 30px;

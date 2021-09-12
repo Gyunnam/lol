@@ -8,7 +8,7 @@ const api = axios.create({
 })
 
 //아이디 검색
-const API_KEY = '?api_key=RGAPI-52fbd40a-78c5-4489-acbe-214b43feac0b'
+const API_KEY = '?api_key=RGAPI-29ac1a81-a759-4747-bf51-dc7bb8336da9'
 
 
 export const lolApi = {
@@ -16,5 +16,4 @@ export const lolApi = {
     searchMatchById : (accountId)=> api.get(`match/v4/matchlists/by-account/${accountId}${API_KEY}`),
     searchIdByMatch : (id)=> api.get(`match/v4/matches/${id}${API_KEY}`)
     
-    // matchMachById : (matchId)=> api.get(``)
 }
