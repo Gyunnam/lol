@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import styled from 'styled-components';
 import { lolApi } from '../../api'
 // import styled from 'styled-components'
 import MatchingTile from '../../components/matchingTile';
@@ -30,8 +31,9 @@ const Search = ()=>{
     return(
         <>
             <input type="text" onKeyPress={onKeyPress} />
-            <div>
-                <p>값 : {id}</p>
+            <p>값 : {id}</p>
+            <Container>
+                
                 {
                     mainPlayerData.map((item,index)=>{
                         // console.log(item);
@@ -39,7 +41,7 @@ const Search = ()=>{
                 
                     })
                 }
-            </div>
+            </Container>
 
         </>
     )
@@ -116,7 +118,12 @@ async function MatchLog (idList,user){
                         ],
                         'teamwin' : item.stats.win,
                         'cs' : `${item.stats.neutralMinionsKilled + item.stats.totalMinionsKilled}`,
-                        'participantId' : Number(idx+1)
+                        'participantId' : Number(idx+1),
+                        'damage' : item.stats.totalDamageDealtToChampions,
+                        'visionscore' : item.stats.visionScore,
+                        'visionwardsset' : item.stats.visionWardsBoughtInGame,
+                        'wardset' : item.stats.wardsPlaced,
+                        'wardskilled' : item.stats.wardsKilled,
                     }
                 )
             })
@@ -147,6 +154,9 @@ async function MatchLog (idList,user){
     return { mainPlayerData, result }
 }
 
-
+const Container = styled.div`
+    width: 700px;
+    margin: 0 auto;
+`
 export default Search
 

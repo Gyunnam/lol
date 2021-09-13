@@ -8,7 +8,7 @@ const api = axios.create({
 })
 
 //아이디 검색
-const API_KEY = '?api_key=RGAPI-29ac1a81-a759-4747-bf51-dc7bb8336da9'
+const API_KEY = '?api_key=RGAPI-90b44d94-91dc-4b38-b987-4dc05e0adaa9'
 
 
 export const lolApi = {

@@ -19,8 +19,9 @@ function MatchingTile({data, name, stats}){
                 };
             });
     
-    // console.log('name원본:',name); // 유저의 닉네임을  
-    // console.log('stats원본:',stats); //챔피언 아이디를
+    console.log('name원본:',name); // 유저의 닉네임을  
+    console.log('stats원본:',stats); //챔피언 아이디를
+    
     
     const championList = stats.map((item)=>{
         return item.champId
@@ -28,13 +29,6 @@ function MatchingTile({data, name, stats}){
     const team1Champ = championList.filter((item,index)=> index < 5)
     const team2Champ = championList.filter((item,index)=> index >= 5)
 
-
-
-
-    // console.log(team1Key);
-    // console.log(team1Champ);
-    
-    // const key = getValues.filter((item,index)=>item.key === `${team1Champ[0]}`)
     const team1key = team1Champ.map((item)=>{
         const id = {'key' : item}
         const key = getValues
@@ -42,46 +36,55 @@ function MatchingTile({data, name, stats}){
                 .map(item=>{
                     return item.id
                 })
-        return key[0]
+        return key
     })
-    
-
-
-
-    const allChampionImg = (key)=>{
-        return key.map((item)=>{
-            return <TeamChampImg src={`http://ddragon.leagueoflegends.com/cdn/11.18.1/img/champion/${item}.png`} />
+    const team2key = team2Champ.map((item)=>{
+        const id = {'key' : item}
+        const key = getValues
+            .filter((item)=>{return item.key === `${id.key}`})
+                .map(item=>{
+                    return item.id
+                })
+        return key
+    })
+    const imgInIT = (arr)=>{
+        const result = arr.map((item)=>{
+            // console.log(item)
+            return item.map(item=>{
+                return (
+                    <div>
+                        <TeamImgBoX>
+                            <TeamChampImg src={`http://ddragon.leagueoflegends.com/cdn/11.18.1/img/champion/${item}.png`} />
+                        </TeamImgBoX>
+                    </div>
+                    )
+            })
         })
+
+        return result
     }
-    // console.log('key',team1key)
-    
 
     const nameList = name.map((item)=>{
-        return item.name
+        return [item.name]
     })
     const team1Name = nameList.filter((item,index)=> index < 5 )
     const team2Name = nameList.filter((item,index)=> index >= 5 )
 
     const nameInit = (arr)=>{
-        return arr.map((item)=>{
-            return <div>{item}</div>
+        const list = arr.map((item)=>{
+            return item.map(item=>{
+                return(
+                    <>
+                        <TeamUserName>{item}</TeamUserName>
+                    </>
+                )
+            })  
         })
-    }
-    // console.log(team1Name)
-    const team1Info = ()=>{
-        for(var i = 0 ; i < 5 ; i++){
-            return (
-                <>
-                <div>{allChampionImg(team1key)}</div>
-                <div>{nameInit(team1Name)}</div>
-                </>
-            )
-            
-        }
+        return list
     }
 
-    // console.log(nameList);
-    
+    // console.log(nameInit(team1Name))
+
     const { A, K ,D, KDA, champId, champLevel, cs, item, spell1Id, spell2Id, teamwin} = data
 
     //승패 변환
@@ -165,6 +168,118 @@ function MatchingTile({data, name, stats}){
         return (item === 0) ? <NoImg /> : <Items><ItemImg src={`http://ddragon.leagueoflegends.com/cdn/11.18.1/img/item/${item}.png`} alt="" /></Items> 
     }) 
     
+    //스텟 팀별로 나누기
+    const team1Stats = stats.filter(item=>item.teamId === 100)
+    const team2Stats = stats.filter(item=>item.teamId === 200)
+
+    //이름별 나누기
+    const team1User = name.filter((item,index)=> index < 5)
+    const team2User = name.filter((item,index)=> index >= 5)
+
+    const team1 = [
+        {
+            'teamStats' : team1Stats,
+            'teamUser' : team1User
+        }
+    ]
+    const team2 = [
+        {
+            'teamStats' : team2Stats,
+            'teamUser' : team2User
+        }
+    ]
+    
+    
+    // console.log('team1:',test);
+
+    // 실수하면 여기 까지 z
+    
+    const totalData = (arr)=>{
+        const result = arr.map(({teamStats,teamUser})=>{
+
+            const userName = teamUser.map(item=>item.name)
+            const userStats = teamStats.map((item,index)=>{
+                //아이템 넣기
+                const itemInit = item.item.map(item=>{
+                    return (item === 0) ? <NoImg /> : <Items><ItemImg src={`http://ddragon.leagueoflegends.com/cdn/11.18.1/img/item/${item}.png`} alt="" /></Items>
+                })
+    
+                
+                //champId > 챔피언 이름으로 변경
+                const champKey = getValues
+                .filter((id)=>{return id.key === `${item.champId}`})
+                    .map(item=>{return item.id})        
+                //ward undefinde 변환
+                const ward = (a)=>{
+                    if(a === undefined){
+                        return '0'
+                    }
+                    return a
+                }
+                return(
+                    <tr key={index}>
+                        <Cell>
+                            <DeatailChampionImg>{champImg(champKey)}</DeatailChampionImg>
+                        </Cell>
+                        <Cell>
+                            <Spell>{consversionSpell(item.spell1Id)}</Spell>
+                            <Spell>{consversionSpell(item.spell2Id)}</Spell>
+                        </Cell>
+                        <Cell>
+                            {userName[index]}
+                        </Cell>
+                        <Cell>{item.champLevel}</Cell>
+                        <Cell>
+                            <div>{item.K} / {item.D} / {item.A}</div>
+                            <div>{item.KDA} : 1 평점</div>
+                        </Cell>
+                        <Cell>{item.damage}</Cell>
+                        <Cell>
+                            <DetailKDAWrap>
+                                <DetailKDABox>시야점수: {item.visionscore}</DetailKDABox>
+                                <DetailKDABox>제어와드: {item.visionwardsset}</DetailKDABox>
+                                <DetailKDABox>와드: {ward(item.wardset)}</DetailKDABox>
+                                <DetailKDABox>와드킬: {ward(item.wardskilled)}</DetailKDABox>
+                            </DetailKDAWrap>
+                        </Cell>
+                        <Cell>{item.cs}</Cell>
+                        <Cell>{itemInit}</Cell>
+                    </tr>
+                )
+            })
+            return userStats
+        })
+        return result
+    }
+    //테이블 짜잘한거 
+    const table = (arr)=>{
+        return(
+            <>
+                <colgroup>
+                            <ColChampionImg/>
+                            <ColSpellImg/>
+                            <ColSummonerName/>
+                            <ColLevel/>
+                            <ColKDA/>
+                            <ColDamage/>
+                            <ColWard/>
+                            <ColCS/>
+                            <ColItem/>
+                        </colgroup>
+                        <TableH>
+                            <tr>
+                                <Th colSpan="3">{(arr[0].teamwin===true)?'승리':'패배'}</Th>
+                                <Th>Level</Th>
+                                <Th>KDA</Th>
+                                <Th>피해량</Th>
+                                <Th>와드</Th>
+                                <Th>cs</Th>
+                                <Th>아이템</Th>
+                            </tr>
+                        </TableH>
+            </>
+        )
+    }
 
     return(
         <>
@@ -213,27 +328,59 @@ function MatchingTile({data, name, stats}){
                             </ItemList>
                         </ItemWrap>
                         <TeamGroup>
-                                <div>
-    
-                                    {team1Info()}
-                                </div>
-                                <div>
-                                    {nameInit(team2Name)}
-                                </div>
+                            <TeamContainer>
+                                <TeamWrap>
+                                    <div>
+                                        {imgInIT(team1key)}
+                                    </div>
+                                    <div>
+                                        {nameInit(team1Name)}
+                                    </div>
+                                </TeamWrap>
+                                <TeamWrap>
+                                    <div>
+                                        {imgInIT(team2key)}
+                                    </div>
+                                    <div>
+                                        {nameInit(team2Name)}
+                                    </div>
+                                </TeamWrap>
+                            </TeamContainer>
                         </TeamGroup>
-                        <DeatilBtn>버튼</DeatilBtn>
+                        <DeatilBtn>
+                            버튼
+                        </DeatilBtn>
                     </Content>
                 </GameItem>
-                <div>디테일</div>
+                <TableContainer className="detail"> 
+                    <TableWrap>
+                        <Table>
+                            {table(team1Stats)}
+                            <tbody>
+                                {totalData(team1)}
+                            </tbody>
+                        </Table>
+                        <Table>
+                            {table(team2Stats)}
+                            <tbody>
+                                {totalData(team2)}
+                            </tbody>
+                        </Table>
+                    </TableWrap>
+                </TableContainer>
             </GameItemWrap>
         </>
     )
 }
 
+
 const GameItemWrap = styled.div`
     position: relative;
     border-radius: 3px;
     margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 `
 const GameItem = styled.div`
     position: relative;
@@ -258,7 +405,7 @@ const GameResult = styled.div`
     vertical-align: middle;
 `
 const GameSetInfo = styled.div`
-    width: 100px;
+    width: 90px;
 
     display: table-cell;
     height: 96px;
@@ -308,7 +455,7 @@ const ChampionName = styled.div`
 `
 const GameKDA = styled.div`
     text-align: center;
-
+    width: 75px;
     display: table-cell;
     height: 96px;
     vertical-align: middle;
@@ -325,6 +472,7 @@ const Stats = styled.div`
 `
 const ItemWrap = styled.div`
     display: table-cell;
+    width: 130px;
     height: 96px;
     vertical-align: middle;
 `
@@ -356,15 +504,37 @@ const ItemImg = styled.img`
 `
 const TeamGroup = styled.div`
     width: 170px;
-
     display: table-cell;
     height: 96px;
     vertical-align: middle;
+`
+const TeamContainer = styled.div`
+    display: flex;
+`
+const TeamWrap = styled.div`
+    width: 90px;
+    display: flex;
+    margin-right: 5px;
+`
+const TeamImgBoX = styled.div`
+    width: 16px;
+    height: 16px;
+    margin-bottom: 1px;
+    margin-right: 1px;
 `
 
 const TeamChampImg = styled.img`
     width: 100%;
     height: 100%;
+`
+const TeamUserName = styled.div`
+    height: 16px;
+    line-height: 16px;
+    margin-bottom: 1px;
+    width: 65px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 `
 const DeatilBtn = styled.div`
     width: 30px;
@@ -372,6 +542,75 @@ const DeatilBtn = styled.div`
     display: table-cell;
     height: 96px;
     vertical-align: middle;
+`
+//디테일부분
+const TableContainer = styled.div`
+    display : block;
+    margin-top: 10px;
+`
+const TableWrap = styled.div`
+    width: 680px;
+    border: 1px solid #cdd2d2;
+`
+const Table = styled.table`
+    width: 100%;
+    table-layout: fixed;
+`
+const TableH = styled.thead`
+    border: solid 1px #cdd2d2;
+    background-color: #fff;
+`
+const Th = styled.th`
+    height: 32px;
+    color: #555e5e;
+    font-size: 12px;
+    font-weight: normal;
+`
+const ColChampionImg = styled.col`
+    width: 44px;
+`
+const ColSpellImg = styled.col`
+    width: 18px;
+`
+const ColSummonerName = styled.col`
+    width: 85px;
+`
+const ColLevel = styled.col`
+    width: 45px;
+`
+
+const ColKDA = styled.col`
+    width: 96px;
+`
+const ColDamage = styled.col`
+    width: 66px;
+`
+const ColWard = styled.col`
+    width: 70px;
+`
+const ColCS = styled.col`
+    width: 55px;
+`
+const ColItem = styled.col`
+    width: 180px;
+`
+const Cell = styled.td`
+    padding: 3px 0;
+    text-align: center;
+`
+const DeatailChampionImg = styled.div`
+    display: inline-block;
+    width: 38px;
+    height: 38px;
+    vertical-align: middle;
+    border-radius: 50%;
+    overflow: hidden;
+`
+const DetailKDAWrap = styled.div`
+    text-align: center;
+`
+const DetailKDABox = styled.div`
+    font-size: 7px;
 `
 
 export default MatchingTile
