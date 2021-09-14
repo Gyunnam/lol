@@ -79,7 +79,7 @@ async function match(user){
 
     var a = []
     
-    for(var i = 0 ; i < 3 ; i++){
+    for(var i = 0 ; i < 15 ; i++){
         a.push(matchList.matches[i].gameId)
     }
     
