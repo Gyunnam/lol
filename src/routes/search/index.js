@@ -30,8 +30,16 @@ const Search = ()=>{
 
     return(
         <>
-            <input type="text" onKeyPress={onKeyPress} />
-            <p>값 : {id}</p>
+            <HeaderContainer>
+                <Wrap>
+                    <LogoBox href="/">
+                        <LogoImg src="https://fontmeme.com/permalink/210912/1cfb34148eeaf0d1f78bef00884a3ba3.png" alt="logo" />
+                    </LogoBox>
+                    
+                    <SearchInput type="text" placeholder="닉네임을 입력해주세요" autocomplete="off" onKeyPress={onKeyPress} />
+                    
+                </Wrap>
+            </HeaderContainer>
             <Container>
                 
                 {
@@ -160,3 +168,33 @@ const Container = styled.div`
 `
 export default Search
 
+const HeaderContainer = styled.div`
+    width: 100%;
+    height: 70px;
+    background: #5383e8;
+    margin-bottom: 15px;
+`
+const Wrap = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items : center;
+    margin: auto 0;
+    height: 70px;
+
+`
+const LogoBox = styled.a`
+    width: 100px;
+    margin-right: 20px;
+`
+const LogoImg = styled.img`
+    width: 100%;
+    height: 100%;
+`
+
+const SearchInput = styled.input`
+    width: 170px;
+    height: 10px;
+    border-radius: 5px;
+    border : 1px solid #3867c4;
+    padding: 15px;
+`

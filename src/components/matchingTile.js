@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import ChapmionData from '../data/champion.json'
 // import SummonerList from './SummonerList';
@@ -6,7 +6,7 @@ import ChapmionData from '../data/champion.json'
 
 function MatchingTile({data, name, stats}){
 
-
+    const [ on , setOn ] = useState(false)
     const {data:champ} =  ChapmionData
     
     const getValues = Object.values(champ)
@@ -273,7 +273,7 @@ function MatchingTile({data, name, stats}){
                                 <Th>KDA</Th>
                                 <Th>피해량</Th>
                                 <Th>와드</Th>
-                                <Th>cs</Th>
+                                <Th>CS</Th>
                                 <Th>아이템</Th>
                             </tr>
                         </TableH>
@@ -347,27 +347,32 @@ function MatchingTile({data, name, stats}){
                                 </TeamWrap>
                             </TeamContainer>
                         </TeamGroup>
-                        <DeatilBtn>
-                            버튼
+                        <DeatilBtn onClick={()=>{setOn(!on)}}>
+                            상세
                         </DeatilBtn>
                     </Content>
                 </GameItem>
-                <TableContainer className="detail"> 
-                    <TableWrap>
-                        <Table>
-                            {table(team1Stats)}
-                            <tbody>
-                                {totalData(team1)}
-                            </tbody>
-                        </Table>
-                        <Table>
-                            {table(team2Stats)}
-                            <tbody>
-                                {totalData(team2)}
-                            </tbody>
-                        </Table>
-                    </TableWrap>
-                </TableContainer>
+                {
+                    on === true
+                    ? <TableContainer className="detail"> 
+                        <TableWrap>
+                            <Table>
+                                {table(team1Stats)}
+                                <tbody>
+                                    {totalData(team1)}
+                                </tbody>
+                            </Table>
+                            <Line />
+                            <Table>
+                                {table(team2Stats)}
+                                <tbody>
+                                    {totalData(team2)}
+                                </tbody>
+                            </Table>
+                        </TableWrap>
+                    </TableContainer>
+                    : null
+                }
             </GameItemWrap>
         </>
     )
@@ -530,6 +535,7 @@ const TeamChampImg = styled.img`
 const TeamUserName = styled.div`
     height: 16px;
     line-height: 16px;
+    margin-left: 2px;
     margin-bottom: 1px;
     width: 65px;
     text-overflow: ellipsis;
@@ -537,11 +543,14 @@ const TeamUserName = styled.div`
     overflow: hidden;
 `
 const DeatilBtn = styled.div`
-    width: 30px;
-
+    width: 35px;
     display: table-cell;
     height: 96px;
     vertical-align: middle;
+    background: #5383e8;
+    text-align: center;
+    color: #fff;
+    font-size: 9px;
 `
 //디테일부분
 const TableContainer = styled.div`
@@ -611,6 +620,12 @@ const DetailKDAWrap = styled.div`
 `
 const DetailKDABox = styled.div`
     font-size: 7px;
+`
+const Line = styled.div`
+    width: 100%;
+    background: #5383e8;
+    height: 20px;
+    
 `
 
 export default MatchingTile
